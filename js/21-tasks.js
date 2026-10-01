@@ -78,15 +78,26 @@ function loadTask(t, reveal){
   shapeSel.value=t.shape;
   if(t.size!=null){ const e=document.getElementById('pSize'); if(e) e.value=String(t.size); }
   if(t.height!=null){ const e=document.getElementById('pHeight'); if(e) e.value=String(t.height); }
+  state.baseXY = t.base ? t.base.map(q=>q.slice()) : null;
   const solid=loadShape(t.shape);
   if(!solid) return null;
   const map=labelMap(solid);
   const ids=[];
+  /* точки на рёбрах: m.r — доля от A до B (0,5 по умолчанию), r>1 — на продолжении */
   for(const m of (t.mids||[])){
     const a=map.get(m.a), b=map.get(m.b);
     if(a&&b){
-      const p=centroid([P(a).p,P(b).p]);
+      const k=(m.r!=null)?m.r:0.5;
+      const p=V.lerp(P(a).p,P(b).p,k);
       const np=addPoint(p,m.label,{color:'#7ee787'});
+      np.ratio={a:m.a,b:m.b,r:k};
+      ids.push(np.id);
+    }
+  }
+  /* произвольные точки с координатами (в системе координат фигуры) */
+  for(const pt of (t.pts||[])){
+    if(pt&&pt.label&&pt.p){
+      const np=addPoint(pt.p.slice(),pt.label,{color:'#7ee787'});
       ids.push(np.id);
     }
   }

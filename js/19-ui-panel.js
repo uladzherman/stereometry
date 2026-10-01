@@ -161,6 +161,20 @@ document.getElementById('btnAddPt').addEventListener('click',()=>{
   state.selection=[np.id];
   renderObjList(); updateSelInfo(); draw();
 });
+/* точка, делящая выбранный отрезок AB в отношении AM : MB = m : n */
+document.getElementById('btnAddRatio').addEventListener('click',()=>{
+  if(state.selection.length!==2){ flash('Выберите две вершины (инструмент «Выбор»), затем задайте отношение'); return; }
+  const A=P(state.selection[0]), B=P(state.selection[1]);
+  if(!A||!B){ flash('Не удалось прочитать выбранные точки'); return; }
+  const m=parseFloat(document.getElementById('ratM').value);
+  const n=parseFloat(document.getElementById('ratN').value);
+  if(!(m>=0&&n>=0&&m+n>0)){ flash('Задайте неотрицательные m и n, не оба нули'); return; }
+  const t=m/(m+n);
+  const np=addPoint(V.lerp(A.p,B.p,t), autoLabel(), {color:'#7ee787'});
+  state.selection=[np.id];
+  renderObjList(); updateSelInfo(); draw();
+  flash('Точка '+np.label+' на '+A.label+B.label+' в отношении '+m+' : '+n+(t===0.5?' (середина)':''));
+});
 document.getElementById('dynRange').addEventListener('input',e=>{
   if(!state.dyn) return;
   state.dyn.off=parseFloat(e.target.value);

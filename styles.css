@@ -354,6 +354,12 @@
   #probContent .task .ans{font-size:12.5px;color:var(--ok);line-height:1.55;margin-top:9px;display:none;padding-top:9px;border-top:1px dashed #2a3342}
   #probContent .task.sh .ans{display:block}
   #probContent .hintline{font-size:12.5px;color:#fbbf24;line-height:1.55;margin-top:9px;padding-top:9px;border-top:1px dashed #2a3342}
+  #probContent .solvebox{margin-top:10px}
+  #probContent .solveArea{min-height:104px;font-size:13px;line-height:1.55}
+  #probContent .solvebox .amt{margin-top:7px}
+  #probContent .checkmsg{margin-top:8px;font-size:12.5px;line-height:1.5;color:var(--dim)}
+  #probContent .checkmsg.good{color:var(--ok)}
+  #probContent .checkmsg.maybe{color:var(--warn)}
   #probContent .amt{display:flex;gap:7px;flex-wrap:wrap}
   @media(max-width:820px){
     #problems{flex-direction:column}

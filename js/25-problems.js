@@ -316,6 +316,16 @@ function renderProblems(){
   });
   renderTopic(curTopicIdx);
 }
+/* авто-проверка решения (нестрогая): ищет в ответе ученика метки или числа эталона */
+function gradeTask(task, text){
+  const u=toDigits(String(text||'')).toLowerCase();
+  if(!u.trim()) return 'empty';
+  const has=tok=>{ const q=toDigits(String(tok)).toLowerCase(); return q && u.includes(q); };
+  if(task.answer && task.answer.length) return task.answer.every(has) ? 'good' : 'maybe';
+  const nums=(String(task.res||'').match(/\d+(?:[.,]\d+)?/g)||[]);
+  if(nums.some(has)) return 'good';
+  return 'maybe';
+}
 function renderTopic(i){
   curTopicIdx=i;
   const items=document.querySelectorAll('#topicList .topicItem');
@@ -328,16 +338,50 @@ function renderTopic(i){
     const d=document.createElement('div'); d.className='task';
     d.innerHTML='<h3>'+(ti+1)+'. '+(task.title||'Задача')+'</h3><p>'+task.text+'</p>'+
       '<div class="amt">'+
-        '<button class="btn sm pri" data-a="solve">Решать в 3D</button>'+
+        '<button class="btn sm pri" data-a="solve">Решать</button>'+
         '<button class="btn sm" data-a="hint">Подсказка</button>'+
         '<button class="btn sm grn" data-a="ans">Показать ответ</button>'+
-      '</div><div class="hintline" hidden>'+(task.hint||'Нет подсказки')+'</div>'+
+        '<button class="btn sm" data-a="build">Построение в 3D</button>'+
+      '</div>'+
+      '<div class="hintline" hidden>'+(task.hint||'Нет подсказки')+'</div>'+
+      '<div class="solvebox" hidden>'+
+        '<textarea class="solveArea" placeholder="Запишите здесь своё решение: ход рассуждений, построение, ответ…"></textarea>'+
+        '<div class="amt">'+
+          '<button class="btn sm pri" data-a="check">Проверить</button>'+
+          '<button class="btn sm" data-a="clear">Очистить</button>'+
+        '</div>'+
+        '<div class="checkmsg"></div>'+
+      '</div>'+
       '<div class="ans">'+(task.res||'')+'</div>';
-    d.querySelector('[data-a=solve]').addEventListener('click',()=>openProblem(task,false));
+    const box=d.querySelector('.solvebox');
+    const area=d.querySelector('.solveArea');
+    const msg=d.querySelector('.checkmsg');
+    const storeKey='stereo:sol:'+(task.title||('t'+curTopicIdx+'-'+ti));
+    try{ const saved=localStorage.getItem(storeKey); if(saved) area.value=saved; }catch(_){}
+    area.addEventListener('input',()=>{ try{ localStorage.setItem(storeKey,area.value); }catch(_){} });
+    d.querySelector('[data-a=solve]').addEventListener('click',()=>{
+      box.hidden=!box.hidden;
+      if(!box.hidden) area.focus();
+    });
     d.querySelector('[data-a=hint]').addEventListener('click',()=>{
       const hl=d.querySelector('.hintline'); hl.hidden=!hl.hidden;
     });
-    d.querySelector('[data-a=ans]').addEventListener('click',()=>{ d.classList.add('sh'); openProblem(task,true); });
+    d.querySelector('[data-a=ans]').addEventListener('click',()=>{ d.classList.add('sh'); });
+    d.querySelector('[data-a=build]').addEventListener('click',()=>openProblem(task,true));
+    d.querySelector('[data-a=check]').addEventListener('click',()=>{
+      const r=gradeTask(task,area.value);
+      msg.className='checkmsg'+(r==='good'?' good':r==='maybe'?' maybe':'');
+      if(r==='empty'){ msg.textContent='Сначала запишите решение.'; return; }
+      msg.textContent = r==='good'
+        ? 'Есть совпадения с эталоном — сверьте ход решения ниже.'
+        : 'Автопроверка нестрогая: сверьтесь с эталоном ответа ниже.';
+      d.classList.add('sh');
+    });
+    d.querySelector('[data-a=clear]').addEventListener('click',()=>{
+      area.value=''; msg.textContent=''; msg.className='checkmsg';
+      try{ localStorage.removeItem(storeKey); }catch(_){}
+      area.focus();
+    });
     c.appendChild(d);
   });
   const main=document.getElementById('probMain');

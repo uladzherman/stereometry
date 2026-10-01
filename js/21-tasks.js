@@ -106,10 +106,10 @@ function loadTask(t, reveal){
     if(map.has(lb)) return map.get(lb);
     return ids.find(id=>P(id).label===lb);
   }).filter(Boolean);
-  if(reveal){
+  if(reveal || t.always){
     if(ansIds.length===3) addSection(solid.id, ansIds);
     buildTaskConstruct(t.construct);
-    if(ansIds.length===3){ state.selection=ansIds.slice(); updateSelInfo(); }
+    if(reveal && ansIds.length===3){ state.selection=ansIds.slice(); updateSelInfo(); }
   }
   renderObjList(); draw();
   return solid;

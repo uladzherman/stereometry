@@ -47,7 +47,7 @@ function drawPlanePatches(){
 
     /* линия пересечения плоскости с фигурами */
     for(const solid of state.solids){
-      if(!solid.show || solid.faces.length>200) continue;
+      if(!solid.show || solid.faces.length>2600) continue;
       const poly=sectionPolygon(solid, pln);
       if(!poly) continue;
       const sp=poly.map(project);

@@ -17,8 +17,5 @@
 })();
 initAdaptiveUI();
 rebuildIndex();
-renderTasks();
 updateStepUI();
-resize();
-adjustScale();
-draw();
+initHome();

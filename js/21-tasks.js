@@ -59,29 +59,25 @@ const TASKS = [
     res:'Равносторонний треугольник BDA₁.' },
 ];
 
-function renderTasks(){
-  const el=document.getElementById('taskList');
-  el.innerHTML='';
-  TASKS.forEach((t,i)=>{
-    const d=document.createElement('div'); d.className='task';
-    d.innerHTML='<h3>'+(i+1)+'. '+t.title+'</h3><p>'+t.text+'</p>'+
-      '<div class="amt"><button class="btn sm pri" data-a="load">Загрузить</button>'+
-      '<button class="btn sm" data-a="hint">Подсказка</button>'+
-      '<button class="btn sm grn" data-a="ans">Показать ответ</button></div>'+
-      '<div class="ans">'+t.res+'</div>';
-    const body=d.querySelector('.ans');
-    d.querySelector('[data-a=load]').addEventListener('click',()=>loadTask(t,false));
-    d.querySelector('[data-a=hint]').addEventListener('click',()=>flash(t.hint));
-    d.querySelector('[data-a=ans]').addEventListener('click',()=>{
-      d.classList.add('sh'); loadTask(t,true);
-    });
-    el.appendChild(d);
-  });
+function taskIdByLabel(lb){
+  const p=findPtByLabel(lb);
+  return p?p.id:null;
+}
+/* построение решения: список отрезков/прямых/плоскостей по буквенным меткам */
+function buildTaskConstruct(list){
+  if(!list) return;
+  for(const e of list){
+    const a=taskIdByLabel(e.a), b=taskIdByLabel(e.b), c=e.c?taskIdByLabel(e.c):null;
+    if(e.t==='seg' && a&&b) state.segments.push({id:uid(),a,b,color:'#4ade80',show:true,op:newOp()});
+    else if(e.t==='line' && a&&b) state.lines.push({id:uid(),a,b,color:'#f59e0b',show:true,op:newOp()});
+    else if(e.t==='plane' && a&&b&&c && planeFrom3(P(a).p,P(b).p,P(c).p))
+      state.planes.push({id:uid(),a,b,c,show:true,op:newOp()});
+  }
 }
 function loadTask(t, reveal){
   shapeSel.value=t.shape;
   const solid=loadShape(t.shape);
-  if(!solid) return;
+  if(!solid) return null;
   const map=labelMap(solid);
   const ids=[];
   for(const m of (t.mids||[])){
@@ -92,15 +88,17 @@ function loadTask(t, reveal){
       ids.push(np.id);
     }
   }
+  rebuildIndex();
   const ansIds = (t.answer||[]).map(lb=>{
     if(map.has(lb)) return map.get(lb);
-    const f=ids.find(id=>P(id).label===lb);
-    return f;
+    return ids.find(id=>P(id).label===lb);
   }).filter(Boolean);
-  if(reveal && ansIds.length===3){
-    const sec=addSection(solid.id, ansIds);
-    if(sec){ state.selection=ansIds.slice(); updateSelInfo(); }
+  if(reveal){
+    if(ansIds.length===3) addSection(solid.id, ansIds);
+    buildTaskConstruct(t.construct);
+    if(ansIds.length===3){ state.selection=ansIds.slice(); updateSelInfo(); }
   }
   renderObjList(); draw();
+  return solid;
 }
 

@@ -7,7 +7,26 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="app">
+<div id="home">
+  <div class="homeWrap">
+    <h1 class="homeTitle">Тренажёр <span>стереометрии</span></h1>
+    <div class="homeSub">Выберите режим работы</div>
+    <div class="homeCards">
+      <button class="homeCard" data-mode="build">
+        <span class="hc-ic">▣</span>
+        <b>Построение</b>
+        <span class="hc-desc">3D-тренажёр: многогранники и тела вращения, точки, прямые, плоскости и сечения. Вращайте сцену, выбирайте вершины и стройте.</span>
+      </button>
+      <button class="homeCard" data-mode="problems">
+        <span class="hc-ic">✓</span>
+        <b>Решение задач</b>
+        <span class="hc-desc">Задания по темам курса: многогранники, аксиомы, параллельность, перпендикулярность, углы и сечения. С подсказками и ответами.</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="app" hidden>
   <aside id="panel">
     <h1>Тренажёр <span>стереометрии</span></h1>
     <div class="sub">Построение фигур, прямых, плоскостей и сечений многогранников. Вращайте сцену мышью, выбирайте вершины кликом и строите.</div>
@@ -186,17 +205,24 @@
       <h2>Объекты на сцене</h2>
       <div class="objlist" id="objList"></div>
     </div>
-
-    <!-- Задания -->
-    <div class="card" data-icon="✓">
-      <h2>Задания тренажёра</h2>
-      <div id="taskList"></div>
-    </div>
   </aside>
 
   <main id="stage">
     <canvas id="cv"></canvas>
     <button id="panelToggle" title="Показать / скрыть панель инструментов">☰</button>
+    <button id="homeBtn" title="Вернуться в меню">⌂</button>
+    <div id="problemBar" hidden>
+      <div class="pb-h">
+        <b id="pbTitle">Задача</b>
+        <button id="pbClose" title="Скрыть">✕</button>
+      </div>
+      <div class="pb-t" id="pbText"></div>
+      <div class="amt">
+        <button class="btn sm" id="pbHint">Подсказка</button>
+        <button class="btn sm grn" id="pbAns">Показать ответ</button>
+        <button class="btn sm" id="pbTasks">К задачам</button>
+      </div>
+    </div>
     <div id="rail"></div>
     <div id="revPrompt"></div>
     <div id="explain" class="collapsed">
@@ -219,6 +245,19 @@
       <button id="btnUndo" title="Отменить действие" disabled>←</button>
       <button id="btnRedo" title="Вернуть действие" disabled>→</button>
     </div>
+  </main>
+</div>
+
+<div id="problems" hidden>
+  <aside id="probPanel">
+    <div class="ph">
+      <button class="btn sm" id="probHome">← Меню</button>
+      <h1>Решение задач</h1>
+    </div>
+    <div id="topicList"></div>
+  </aside>
+  <main id="probMain">
+    <div id="probContent"></div>
   </main>
 </div>
 
@@ -247,6 +286,7 @@
 <script src="js/21-tasks.js"></script>
 <script src="js/22-parser-parse.js"></script>
 <script src="js/23-parser-apply.js"></script>
+<script src="js/25-problems.js"></script>
 <script src="js/24-main.js"></script>
 </body>
 </html>

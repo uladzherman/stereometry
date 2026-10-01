@@ -131,4 +131,21 @@
     t.answer=['S','M','N']; t.always=true; });
   patch('Отсечённая призма (объём)',t=>{ t.mids=[{label:'M',a:'A',b:'B'},{label:'N',a:'A',b:'C'},{label:'P',a:'A₁',b:'B₁'}];
     t.answer=['M','N','P']; t.always=true; });
+
+  /* Диаграммы для задач темы «Тела вращения» */
+  const TR=topic('Тела вращения');
+  if(TR){
+    const fp=(title,fn)=>{ const t=TR.tasks.find(x=>x.title===title); if(t) fn(t); };
+    fp('Цилиндр: объём и поверхность',cylAx);
+    fp('Конус: образующая и объём',coneAx);
+    fp('Сфера: объём и поверхность',great);
+    /* сечение цилиндра плоскостью, параллельной оси */
+    fp('Сечение цилиндра',t=>{ const r=SZ(t)/2,h=HT(t),d=rr(r/2);
+      t.pts=[{label:'A',p:[d,0,-h/2]},{label:'B',p:[d,0,h/2]},{label:'C',p:[d,rr(r*0.85),0]}];
+      t.construct=[{t:'plane',a:'A',b:'B',c:'C'}]; t.always=true; });
+    /* сечение конуса плоскостью, параллельной основанию */
+    fp('Сечение конуса',t=>{ const r=SZ(t)/2,q=rr(r/2);
+      t.pts=[{label:'A',p:[q,0,0]},{label:'B',p:[0,q,0]},{label:'C',p:[-q,0,0]}];
+      t.construct=[{t:'plane',a:'A',b:'B',c:'C'}]; t.always=true; });
+  }
 })();

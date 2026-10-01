@@ -76,6 +76,8 @@ function buildTaskConstruct(list){
 }
 function loadTask(t, reveal){
   shapeSel.value=t.shape;
+  if(t.size!=null){ const e=document.getElementById('pSize'); if(e) e.value=String(t.size); }
+  if(t.height!=null){ const e=document.getElementById('pHeight'); if(e) e.value=String(t.height); }
   const solid=loadShape(t.shape);
   if(!solid) return null;
   const map=labelMap(solid);
